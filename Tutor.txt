@@ -1,0 +1,130 @@
+Proyecto de .NET Core - Video 2
+=========================================
+
+1. Crear repositorio en GitHub
+
+2. Clonar reporsitorio en VS desde GitHub. En vez de crear solucion en blanco se clona
+   se lee la ruta de clonacion desde GitHub
+
+3. Crear arquitectura de la aplicación en VS.
+   - Crear proyecto API ASP.NET Core
+   - Crear proyecto FrontEnd - Blazor App Standalong
+   - Crear libreria de clases Share
+   - Crear proyecto de pruebas unitarias
+
+4. Probar que todos los proyectos ejecuten
+
+5. Hacer commit
+
+6. Crear la primera entidad.
+   - Crear carpeta Entities en Share
+   - Crear la clase i.e.: Country en Entities (public)
+
+7. Clase Country contiene
+   - Id:int
+   - Name:string al final se coloca = null!
+   - DataNotations:
+	- [DisplayName("País") o Display(Name = "País")]
+	- [Maxlength(100, errorMessage="El campo {0} no puede tener mas de {1} caracteres")]
+	- [Required(errorMessage="El campo {0} es obligatorio")]
+
+- Instalar extensión CodeMaid
+
+8. Crear la carpeta data y crear una clase para DataContext: DbContext
+	public DataContext(DbContextOptions<DataContext> options): base(options)
+
+9. Agregar la primera tabla con DbSet<tabla> Countries {get; set;}
+
+10. Crear un indice por Name con API Fluet, ensayar con Data Anotations
+	override void OnModelCreating(ModelBuilder modelBuilder){
+	base.OnModelCreating(modelBuilder);
+	modelBuilder.Entity<Entry>().HasIndex(x => x.Name).IsUnique();	
+	}
+
+11. En appSettings en el backend se debe crear la entrada ConnectionString
+ por ejemplo:
+  "ConnectionString":{
+	"localConnection":"Server=(localdb)\\MSSQLLocalDB; 
+			   DataBase=Tienda; 
+			   Trusted_Connection=True;
+			   MultipleActiveResultSets=true"
+}   
+
+12. Instalar el proveedor para la base de datos con la que se va a trabajar, en nuestro caso: 
+    Microsoft.EntityFramework.SqlServer -> para el proveedor
+    Microsoft.EntityFramework.Tools -> para las migraciones
+
+13. Inyectar el servicio de conexion en Program.cs
+	- esto es antes del builder.Build()
+	Builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer("name=localConnection"));
+
+14. Hacer la migracion en el Package Manager Console con el proyecto backend seleccionado en los dos combos
+    add-migration "Comentario de la migracion o Nombre de la migración" -> Crear una carpeta Migrations, allí se van a ir almacenando
+    update-database -> Error only the invariant culture es sopported in globalization. Esto se soluciona
+    Solution: En el archivo del proyecto cambiar la propiedad: InvarianGlobalization a false
+
+15. Hacer el comit al repositorio de control de codigo fuente
+    Git Changes -> Commit all and Sync, adicionar un comentario al commit
+
+Nota: instalar la extension CodeMaid
+
+
+
+Crear el primer servicio - Video 3
+======================================
+1. Crear una clase controlador: CountriesController: ControllerBase
+   Nombre debe ser en prural por estandar
+
+2. Agregar una Data Annotations a la clase para poderla convertir en controlador
+   [ApiController]
+
+3. Crear la ruta (enrutar) con otro Data Annotations
+   [Rute("api/[controller]")]
+
+4. Crear el contructor de la clase y hacer la inyeccion del DataContext. Como?
+	- campo private readonly DataContext _context;
+	- en el constructor: _context = context
+
+5. Crear el metodo POST (Cada que se pueda hacer asincronico hacerlo asincronico)
+	- Adicionar el Data Annotation [HttpPost]
+	- metodo publico Async que devuelve un Task<IActionResult> PostAsync(Country country)
+	{
+	   _context.Add(country);
+	   await _context.SaveChangesAsync();
+	   retunr Ok(country);
+	}
+
+6. Crear el metodo GET
+	- Adicionar Data Annotation [HttpGet]
+	- crear el método Async GetAsync() que devuelve Task<IActionResul>
+	- para retornar todos los registros se hace con un return asi.
+	- return Ok(await _context.Countries.ToListAsync())
+
+7. Sobrecargar el metodo GetAsync para obtener un elemento específico
+	- [HttpGet("{id}"]
+	- (int id)
+	- Controlar los errores que se puedan presentar. por ejemplo se 
+	  usando _context.Countries.FinfAsync(id) = country si esxiste se devuelve sino return NotFound()
+
+8. Crear el metodo PUT
+	- Es muy similar al POST pero cambia 
+	- HttpPut y en ves de 
+	- PostAsync es PutAsync
+	- en ves de Add es Update
+	- No se tiene que devolver el objeto pero si se puede usar return NotContent()
+
+
+9. Crear el metodo DELETE
+	- Es muy similar al Get sobrecargado con id
+	- Tambien se retorna NoContent() no el objeto
+
+
+10. Ajustar el Program.cs despues de la instancia de la APP, 
+	- app.useCorse(x => x
+		.AllowAnyMethod(), 
+		.AllowAnyHeader(), 
+		.AllowOriginAllowed(origin => true)
+		.AllowCredentials())
+	este código abre la seguridad y es necesario para poder consumir el appi desde el frontend.
+
+11. Hacer el commit de todos los cambios
