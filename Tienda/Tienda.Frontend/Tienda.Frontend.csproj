@@ -7,8 +7,24 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Pages\CountriesIndex.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\CountriesIndex.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\CountriesIndex.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Pages\Countries\CountriesIndex.razor" />
   </ItemGroup>
 
 </Project>
