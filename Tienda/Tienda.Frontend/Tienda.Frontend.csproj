@@ -27,4 +27,8 @@
     <None Include="Pages\Countries\CountriesIndex.razor" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Tienda.Shared\Tienda.Shared.csproj" />
+  </ItemGroup>
+
 </Project>
