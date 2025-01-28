@@ -3,6 +3,7 @@ using Tienda.Shared.Entities;
 
 namespace Tienda.Backend.Data
 {
+
     public class DataContext : DbContext
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options)
